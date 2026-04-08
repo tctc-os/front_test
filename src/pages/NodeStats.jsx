@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react'; // Added useContext
 import { nodeApi } from '../services/api';
+import { AuthContext } from '../context/AuthContext'; // Import your context
 
 const NodeStats = () => {
+    const { user } = useContext(AuthContext); // Get user role
     const [events, setEvents] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState(null);
+
+    // Permission Check Helper
+    const canManage = user?.role === 'admin' || user?.role === 'editor';
 
     const [formData, setFormData] = useState({
         title: '',
@@ -34,11 +39,12 @@ const NodeStats = () => {
     }, []);
 
     const startEdit = (event) => {
+        if (!canManage) return; // Guard clause
         setEditingId(event.id);
         setFormData({
             title: event.title,
             description: event.description || '',
-            date: event.date ? event.date.split('T') : '',
+            date: event.date ? event.date.split('T') : '', // Fixed split
             status: event.status
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -51,6 +57,8 @@ const NodeStats = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!canManage) return alert("Unauthorized"); // Guard clause
+
         try {
             if (editingId) {
                 await nodeApi.put(`/events/${editingId}`, formData);
@@ -65,6 +73,9 @@ const NodeStats = () => {
     };
 
     const handleDelete = async (id) => {
+        if (!canManage || user?.role !== 'admin') {
+             return alert("Only admins can delete events.");
+        }
         if (!window.confirm("Delete this event?")) return;
         try {
             await nodeApi.delete(`/events/${id}`);
@@ -88,55 +99,57 @@ const NodeStats = () => {
                 <StatCard label="Finished" value={stats?.finished} color="red" />
             </div>
 
-            {/* --- FORM (CREATE & UPDATE) --- */}
-            <div className={`p-6 rounded-xl border transition-colors ${editingId ? 'border-blue-500 bg-blue-500/5' : 'bg-brand-card border-brand-border'}`}>
-                <h2 className="text-xl font-bold text-brand-text mb-4">
-                    {editingId ? "Edit Event" : "New Event"}
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input 
-                            type="text" placeholder="Event Title" required
-                            className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text focus:border-blue-500 outline-none"
-                            value={formData.title}
-                            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            {/* --- FORM (CREATE & UPDATE) - Only visible to authorized users --- */}
+            {canManage && (
+                <div className={`p-6 rounded-xl border transition-colors ${editingId ? 'border-blue-500 bg-blue-500/5' : 'bg-brand-card border-brand-border'}`}>
+                    <h2 className="text-xl font-bold text-brand-text mb-4">
+                        {editingId ? "Edit Event" : "New Event"}
+                    </h2>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input 
+                                type="text" placeholder="Event Title" required
+                                className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text focus:border-blue-500 outline-none"
+                                value={formData.title}
+                                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                            />
+                            <input 
+                                type="date" required
+                                className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text focus:border-blue-500 outline-none"
+                                value={formData.date}
+                                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                            />
+                        </div>
+                        <textarea 
+                            placeholder="Detailed description"
+                            className="w-full bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text h-24 focus:border-blue-500 outline-none"
+                            value={formData.description}
+                            onChange={(e) => setFormData({...formData, description: e.target.value})}
                         />
-                        <input 
-                            type="date" required
-                            className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text focus:border-blue-500 outline-none"
-                            value={formData.date}
-                            onChange={(e) => setFormData({...formData, date: e.target.value})}
-                        />
-                    </div>
-                    <textarea 
-                        placeholder="Detailed description"
-                        className="w-full bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text h-24 focus:border-blue-500 outline-none"
-                        value={formData.description}
-                        onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    />
-                    <div className="flex gap-4">
-                        <select 
-                            className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text outline-none"
-                            value={formData.status}
-                            onChange={(e) => setFormData({...formData, status: e.target.value})}
-                        >
-                            <option value="upcoming">Upcoming</option>
-                            <option value="ongoing">Ongoing</option>
-                            <option value="finished">Finished</option>
-                        </select>
+                        <div className="flex gap-4">
+                            <select 
+                                className="bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text outline-none"
+                                value={formData.status}
+                                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                            >
+                                <option value="upcoming">Upcoming</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="finished">Finished</option>
+                            </select>
 
-                        <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md">
-                            {editingId ? "Save Changes" : "Create via Node"}
-                        </button>
-
-                        {editingId && (
-                            <button type="button" onClick={cancelEdit} className="px-6 bg-brand-border text-brand-text rounded-lg hover:opacity-80">
-                                Cancel
+                            <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md">
+                                {editingId ? "Save Changes" : "Create via Node"}
                             </button>
-                        )}
-                    </div>
-                </form>
-            </div>
+
+                            {editingId && (
+                                <button type="button" onClick={cancelEdit} className="px-6 bg-brand-border text-brand-text rounded-lg hover:opacity-80">
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </div>
+            )}
 
             {/* --- CRUD LIST TABLE --- */}
             <div className="overflow-x-auto bg-brand-card border border-brand-border rounded-xl">
@@ -146,7 +159,7 @@ const NodeStats = () => {
                             <th className="p-4 font-bold uppercase text-xs opacity-60 text-brand-text">Event</th>
                             <th className="p-4 font-bold uppercase text-xs opacity-60 text-brand-text">Date</th>
                             <th className="p-4 font-bold uppercase text-xs opacity-60 text-brand-text">Status</th>
-                            <th className="p-4 font-bold uppercase text-xs opacity-60 text-brand-text text-right">Actions</th>
+                            {canManage && <th className="p-4 font-bold uppercase text-xs opacity-60 text-brand-text text-right">Actions</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -165,22 +178,26 @@ const NodeStats = () => {
                                         {event.status}
                                     </span>
                                 </td>
-                                <td className="p-4 text-right">
-                                    <div className="flex gap-4 justify-end">
-                                        <button 
-                                            onClick={() => startEdit(event)}
-                                            className="text-blue-500 hover:text-blue-400 font-bold text-sm"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(event.id)}
-                                            className="text-red-500 hover:text-red-400 font-bold text-sm"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
+                                {canManage && (
+                                    <td className="p-4 text-right">
+                                        <div className="flex gap-4 justify-end">
+                                            <button 
+                                                onClick={() => startEdit(event)}
+                                                className="text-blue-500 hover:text-blue-400 font-bold text-sm"
+                                            >
+                                                Edit
+                                            </button>
+                                            {user?.role === 'admin' && (
+                                                <button 
+                                                    onClick={() => handleDelete(event.id)}
+                                                    className="text-red-500 hover:text-red-400 font-bold text-sm"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
