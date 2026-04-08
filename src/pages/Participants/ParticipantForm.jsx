@@ -8,7 +8,7 @@ const ParticipantForm = () => {
     const { user } = useContext(AuthContext);
     
     const [formData, setFormData] = useState({
-        user:user?.username,
+        user:user?.id,
         name: '',
         email: ''
     });
