@@ -66,7 +66,7 @@ const MainLayout = () => {
                             </span>
 
                             {user?.role === 'admin' && (
-                                <a href="href={`${import.meta.env.VITE_API_URL}/admin/`}" target="_blank" rel="noopener noreferrer" className="border border-brand-border bg-brand-bg px-3 py-1 rounded hover:opacity-70 text-sm transition-colors">
+                                <a href={`${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/admin/`} target="_blank" rel="noopener noreferrer" className="border border-brand-border bg-brand-bg px-3 py-1 rounded hover:opacity-70 text-sm transition-colors">
                                     Admin
                                 </a>
                             )}
@@ -78,7 +78,6 @@ const MainLayout = () => {
                     </div>
                 </div>
 
-                {/* MOBILE DROPDOWN MENU */}
                 {menuOpen && (
                     <div className="md:hidden absolute top-full left-0 w-full bg-brand-card border-b border-brand-border p-4 flex flex-col gap-4 shadow-xl animate-in slide-in-from-top">
                         <Link to="/" onClick={() => setMenuOpen(false)} className="font-bold py-2 border-b border-brand-border/50">Dashboard</Link>
@@ -93,6 +92,11 @@ const MainLayout = () => {
                             >
                                 {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
                             </button>
+                            {user?.role === 'admin' && (
+                                <a href={`${import.meta.env.VITE_API_URL.replace(/\/$/, "")}/admin/`} target="_blank" rel="noopener noreferrer" className="border border-brand-border bg-brand-bg p-2 px-4 rounded hover:opacity-70 text-sm transition-colors">
+                                    Admin
+                                </a>
+                            )}
                             <button 
                                 onClick={handleLogout}
                                 className="bg-red-500 text-white p-2 px-4 rounded-lg font-bold flex-1"
