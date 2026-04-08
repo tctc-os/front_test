@@ -13,8 +13,7 @@ const EventDetails = () => {
     const [message, setMessage] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const myRegistration = registrations.find(r => r.participant === myParticipant?.id);
-    
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -39,18 +38,19 @@ const EventDetails = () => {
         fetchData();
     }, [id]);
 
-    // --- LOGIC TO FIND "ME" ---
-    // We look for a participant whose name matches the logged-in username
-    // ... inside your component ...
 
-    // 1. Wrap this in a useMemo or just ensure it handles nulls gracefully
+    // 1. First, find "Who am I?"
     const myParticipant = participants.find(p => 
         p.name?.toLowerCase() === user?.username?.toLowerCase()
     );
 
+    // 2. Second, find "Am I registered?"
     const isAlreadyRegistered = myParticipant 
         ? registrations.some(r => r.participant === myParticipant.id)
         : false;
+
+    // 3. Third, find the specific registration ID (the link) so we can delete it later
+    const myRegistration = registrations.find(r => r.participant === myParticipant?.id);
         
     if (authLoading || loading) {
         return <p className="p-6">Loading data...</p>;
