@@ -74,11 +74,11 @@ const NodeStats = () => {
         }
     };
 
-    if (loading) return <p className="p-6 text-brand-text">Loading Node.js data...</p>;
+    if (loading) return <p className="p-6 text-brand-text">Loading Node data...</p>;
 
     return (
         <div className="p-6 space-y-8">
-            <h1 className="text-3xl font-black mb-6 text-brand-text">Node.js Technical Dashboard</h1>
+            <h1 className="text-3xl font-black mb-6 text-brand-text">Node Technical Dashboard</h1>
 
             {/* --- STATS TILES --- */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -91,7 +91,7 @@ const NodeStats = () => {
             {/* --- FORM (CREATE & UPDATE) --- */}
             <div className={`p-6 rounded-xl border transition-colors ${editingId ? 'border-blue-500 bg-blue-500/5' : 'bg-brand-card border-brand-border'}`}>
                 <h2 className="text-xl font-bold text-brand-text mb-4">
-                    {editingId ? "📝 Edit Event" : "➕ New Event (via Node)"}
+                    {editingId ? "Edit Event" : "New Event"}
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -109,7 +109,7 @@ const NodeStats = () => {
                         />
                     </div>
                     <textarea 
-                        placeholder="Detailed description..."
+                        placeholder="Detailed description"
                         className="w-full bg-brand-bg border border-brand-border p-3 rounded-lg text-brand-text h-24 focus:border-blue-500 outline-none"
                         value={formData.description}
                         onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -126,7 +126,7 @@ const NodeStats = () => {
                         </select>
 
                         <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md">
-                            {editingId ? "Save Changes" : "Create via Node.js"}
+                            {editingId ? "Save Changes" : "Create via Node"}
                         </button>
 
                         {editingId && (
