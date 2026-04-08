@@ -52,7 +52,7 @@ const MainLayout = () => {
                         <Link to="/" className="hover:text-blue-500 transition-colors">Dashboard</Link>
                         <Link to="/events" className="hover:text-blue-500 transition-colors">Events</Link>
                         <Link to="/participants" className="hover:text-blue-500 transition-colors">Participants</Link>
-                        <Link to="/node-stats" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-bold transition-colors flex items-center gap-1">Node Stats</Link>
+                        <Link to="/node-stats" className="hover:text-blue-500 font-bold transition-colors flex items-center gap-1">Node Stats</Link>
                         <div className="border-l border-brand-border pl-6 flex items-center gap-4">
                             <button
                                 onClick={() => setIsDarkMode(!isDarkMode)}
