@@ -14,7 +14,7 @@ const Register = () => {
     setError('');
     try {
       await api.post('/register/', formData);
-      alert('Account created! You can now log in.');
+      alert('Account created, Log in.');
       navigate('/login');
     } catch (err) {
       // This will show you if it's a 400 (Validation Error), 403 (Permission), etc.
