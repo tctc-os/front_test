@@ -8,7 +8,7 @@ export const api = axios.create({
 });
 
 export const nodeApi = axios.create({
-    baseURL: import.meta.env.VITE_NODE_URL || 'http://localhost:5000',
+    baseURL: (import.meta.env.VITE_NODE_URL || 'http://localhost:5000')+'/api',
     headers: {
         'Content-Type': 'application/json',
     },

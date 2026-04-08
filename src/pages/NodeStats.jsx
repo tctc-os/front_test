@@ -20,8 +20,8 @@ const NodeStats = () => {
         try {
             // Note: Vérifie bien que ton instance nodeApi pointe vers le bon port (ex: 5000)
             const [statsRes, eventsRes] = await Promise.all([
-                nodeApi.get('/api/stats'),
-                nodeApi.get('/api/events')
+                nodeApi.get('/stats'),
+                nodeApi.get('/events')
             ]);
             setStats(statsRes.data);
             setEvents(eventsRes.data);
@@ -61,10 +61,10 @@ const NodeStats = () => {
         try {
             if (editingId) {
                 // UPDATE (PUT)
-                await nodeApi.put(`/api/events/${editingId}`, formData);
+                await nodeApi.put(`/events/${editingId}`, formData);
             } else {
                 // CREATE (POST)
-                await nodeApi.post('/api/events', formData);
+                await nodeApi.post('/events', formData);
             }
             cancelEdit();
             fetchData();
@@ -76,7 +76,7 @@ const NodeStats = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Supprimer cet événement ?")) {
             try {
-                await nodeApi.delete(`/api/events/${id}`);
+                await nodeApi.delete(`/events/${id}`);
                 fetchData();
             } catch (err) {
                 console.error(err);
