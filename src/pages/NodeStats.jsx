@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react'; // Added useContext
 import { nodeApi } from '../services/api';
 import { AuthContext } from '../context/AuthContext'; // Import your context
+import { Link } from 'react-router-dom';
 
 const NodeStats = () => {
     const { user } = useContext(AuthContext); // Get user role
