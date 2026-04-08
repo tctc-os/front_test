@@ -166,7 +166,9 @@ const NodeStats = () => {
                         {events.map(event => (
                             <tr key={event.id} className="hover:bg-brand-bg/30 transition-colors border-b border-brand-border last:border-0">
                                 <td className="p-4">
-                                    <p className="font-bold text-brand-text">{event.title}</p>
+                                    <Link to={`/events/${event.id}`} className="hover:underline group">
+                                        <p className="font-bold text-brand-text group-hover:text-blue-500 transition-colors">{event.title}</p>
+                                    </Link>
                                     <p className="text-xs opacity-60 truncate max-w-xs text-brand-text">{event.description}</p>
                                 </td>
                                 <td className="p-4 text-brand-text opacity-80">{new Date(event.date).toLocaleDateString()}</td>
